@@ -14,7 +14,6 @@ class Movies extends Component {
 
   handleRefresh = () => {
     console.log("Refresh button is pressed");
-    console.log(this.state.movies);
     console.log(getMovies());
 
     this.setState({ movies: getMovies() });
@@ -69,6 +68,13 @@ class Movies extends Component {
             ))}
           </tbody>
         </table>
+        <button
+          onClick={this.handleRefresh}
+          type="button"
+          class="btn btn-primary"
+        >
+          Refresh
+        </button>
       </div>
     );
   }
