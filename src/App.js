@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import './App.css';
-import Movies from './Movies/Movies';
+import Movies from './components/Movies';
 
 function App() {
   return (
