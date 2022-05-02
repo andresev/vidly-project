@@ -2,23 +2,21 @@ import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import Like from "./common/Like";
 import Pagination from "./Pagination";
+import { paginate, Paginate } from "../utils/paginate";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
     pageSize: 4,
+    currentPage: 1,
   };
 
   handleDelete = (movie) => {
-    console.log(movie);
     const movies = this.state.movies.filter((m) => m._id !== movie._id);
     this.setState({ movies: movies });
   };
 
   handleRefresh = () => {
-    console.log("Refresh button is pressed");
-    console.log(getMovies());
-
     this.setState({ movies: getMovies() });
   };
 
@@ -31,11 +29,16 @@ class Movies extends Component {
   };
 
   handlePageChange = (page) => {
-    console.log(page);
+    this.setState({ currentPage: page });
   };
 
   render() {
-    if (this.state.movies.length === 0) {
+    //const { length: count } = this.state.movies;
+
+    //movies state has been alias to allMovies. Only works within render method. Because it's not set globally
+    const { pageSize, currentPage, movies: allMovies } = this.state;
+
+    if (allMovies.length === 0) {
       return (
         <div>
           <p>There are no movies. Please try again later. Thank you.</p>
@@ -50,9 +53,12 @@ class Movies extends Component {
       );
     }
 
+    // movies, currentPage, pageSize have been destructured = this.state
+    const movies = paginate(allMovies, currentPage, pageSize);
+
     return (
       <div>
-        <p>Showing {this.state.movies.length} movies in the database.</p>
+        <p>Showing {allMovies.length} movies in the database.</p>
         <table className="table">
           <thead>
             <tr>
@@ -65,7 +71,7 @@ class Movies extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.movies.map((movie) => (
+            {allMovies.map((movie) => (
               <tr key={movie._id}>
                 <td>{movie.title}</td>
                 <td>{movie.genre.name}</td>
@@ -91,9 +97,11 @@ class Movies extends Component {
           </tbody>
         </table>
 
+        {/* pageSize and currentPage have been destructured above. */}
         <Pagination
-          itemCount={this.state.movies.length}
-          pageSize={this.state.pageSize}
+          itemCount={allMovies.length}
+          pageSize={pageSize}
+          currentPage={currentPage}
           onPageChange={this.handlePageChange}
         />
 
