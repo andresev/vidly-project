@@ -3,10 +3,13 @@ import { getMovies } from "../services/fakeMovieService";
 import Like from "./common/Like";
 import Pagination from "./Pagination";
 import { paginate } from "../utils/paginate";
+import ListGroup from "./ListGroup";
+import { getGenres } from "../services/fakeGenreService";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
+    genre: getGenres(),
     pageSize: 4,
     currentPage: 1,
   };
@@ -33,8 +36,11 @@ class Movies extends Component {
   };
 
   handlePageChange = (page) => {
-    console.log(page);
     this.setState({ currentPage: page });
+  };
+
+  handleGenreChange = (genre) => {
+    console.log("handle genre clicked", genre);
   };
 
   render() {
@@ -59,6 +65,11 @@ class Movies extends Component {
 
     return (
       <div>
+        <ListGroup
+          genre={this.state.genre}
+          onGenreChange={this.handleGenreChange}
+          currentGenre={"fill later"}
+        />
         <p>Showing {allMovies.length} movies in the database.</p>
         <table className="table">
           <thead>
