@@ -8,22 +8,22 @@ import { getGenres } from "../services/fakeGenreService";
 
 class Movies extends Component {
   state = {
-    movies: getMovies(),
-    genre: getGenres(),
+    movies: [],
+    genres: [],
     pageSize: 4,
     currentPage: 1,
   };
 
+  componentDidMount() {
+    this.setState({ movies: getMovies(), genres: getGenres() });
+  }
+
   handleDelete = (movie) => {
-    console.log(movie);
     const movies = this.state.movies.filter((m) => m._id !== movie._id);
     this.setState({ movies: movies });
   };
 
   handleRefresh = () => {
-    console.log("Refresh button is pressed");
-    console.log(getMovies());
-
     this.setState({ movies: getMovies() });
   };
 
@@ -39,8 +39,9 @@ class Movies extends Component {
     this.setState({ currentPage: page });
   };
 
-  handleGenreChange = (genre) => {
+  handleGenreSelect = (genre) => {
     console.log("handle genre clicked", genre);
+    this.setState({ selectedGenre: genre });
   };
 
   render() {
@@ -55,7 +56,7 @@ class Movies extends Component {
           <button
             onClick={this.handleRefresh}
             type="button"
-            class="btn btn-primary"
+            className="btn btn-primary"
           >
             Refresh
           </button>
@@ -64,65 +65,69 @@ class Movies extends Component {
     }
 
     return (
-      <div>
-        <ListGroup
-          genre={this.state.genre}
-          onGenreChange={this.handleGenreChange}
-          currentGenre={"fill later"}
-        />
-        <p>Showing {allMovies.length} movies in the database.</p>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Genre</th>
-              <th>Stock</th>
-              <th>Rate</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {movies.map((movie) => (
-              <tr key={movie._id}>
-                <td>{movie.title}</td>
-                <td>{movie.genre.name}</td>
-                <td>{movie.numberInStock}</td>
-                <td>{movie.dailyRentalRate}</td>
-                <td>
-                  <Like
-                    liked={movie.liked}
-                    likeClicked={() => this.handleLike(movie)}
-                  />
-                </td>
-                <td>
-                  <button
-                    onClick={() => this.handleDelete(movie)}
-                    type="button"
-                    className="btn btn-danger btn-sm"
-                  >
-                    Delete
-                  </button>
-                </td>
+      <div className="row">
+        <div className="col-3">
+          <ListGroup
+            items={this.state.genres}
+            selectedItem={this.state.selectedGenre}
+            onItemSelect={this.handleGenreSelect}
+          />
+        </div>
+        <div className="col">
+          <p>Showing {allMovies.length} movies in the database.</p>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Stock</th>
+                <th>Rate</th>
+                <th></th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {movies.map((movie) => (
+                <tr key={movie._id}>
+                  <td>{movie.title}</td>
+                  <td>{movie.genre.name}</td>
+                  <td>{movie.numberInStock}</td>
+                  <td>{movie.dailyRentalRate}</td>
+                  <td>
+                    <Like
+                      liked={movie.liked}
+                      likeClicked={() => this.handleLike(movie)}
+                    />
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => this.handleDelete(movie)}
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        <Pagination
-          itemCount={allMovies.length}
-          pageSize={pageSize}
-          onPageChange={this.handlePageChange}
-          currentPage={currentPage}
-        />
+          <Pagination
+            itemCount={allMovies.length}
+            pageSize={pageSize}
+            onPageChange={this.handlePageChange}
+            currentPage={currentPage}
+          />
 
-        <button
-          onClick={this.handleRefresh}
-          type="button"
-          className="btn btn-primary"
-        >
-          Refresh
-        </button>
+          <button
+            onClick={this.handleRefresh}
+            type="button"
+            className="btn btn-primary"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
     );
   }
